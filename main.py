@@ -5,7 +5,6 @@ from multiprocessing import Pool
 from game import SnakeGame
 from network import NeuralNetwork
 import ga
-import visualize
 
 
 def cmd_train(args):
@@ -23,7 +22,7 @@ def cmd_train(args):
             if best_fitness > best_ever:
                 best_ever = best_fitness
                 ga.save_network(ranked[0], args.out)
-                print(f"  ny rekord: {best_ever:.0f} — gemt til {args.out}")
+                print(f"  New record: {best_ever:.0f} — saved to {args.out}")
 
             new_pop = ranked[:args.elite]
             while len(new_pop) < args.pop:
@@ -40,6 +39,7 @@ def cmd_train(args):
 
 
 def cmd_play(args):
+    import visualize
     visualize.run(net_path=args.net, fps=args.fps)
 
 
@@ -48,8 +48,8 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_train = sub.add_parser("train", help="Train a population with GA")
-    p_train.add_argument("--generations", type=int, default=500)
-    p_train.add_argument("--pop", type=int, default=300)
+    p_train.add_argument("--generations", type=int, default=250)
+    p_train.add_argument("--pop", type=int, default=250)
     p_train.add_argument("--elite", type=int, default=10)
     p_train.add_argument("--k", type=int, default=5)
     p_train.add_argument("--mutation-rate", type=float, default=0.05)

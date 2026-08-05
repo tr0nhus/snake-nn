@@ -41,8 +41,8 @@ Options (defaults shown):
 
 | Flag | Default | Meaning |
 | --- | --- | --- |
-| `--generations` | `500` | Number of generations to evolve |
-| `--pop` | `300` | Population size |
+| `--generations` | `250` | Number of generations to evolve |
+| `--pop` | `250` | Population size |
 | `--elite` | `10` | Top networks copied unchanged into the next generation |
 | `--k` | `5` | Tournament size for parent selection |
 | `--mutation-rate` | `0.05` | Fraction of weights perturbed per child |
@@ -52,7 +52,7 @@ Options (defaults shown):
 Example — a shorter run with a larger population:
 
 ```bash
-python main.py train --generations 200 --pop 500 --out my_net.npz
+python main.py train --generations 100 --pop 500 --out my_net.npz
 ```
 
 Each generation prints its best and average fitness, and announces a new record when one is saved.

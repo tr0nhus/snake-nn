@@ -44,7 +44,7 @@ class SnakeGame:
             self.snake.pop()
             reward = 0
 
-        if self.step_count > 100 * 50 + len(self.snake):
+        if self.step_count > 100 + 50 * len(self.snake):
             self.done = True
             reward =  -10
 

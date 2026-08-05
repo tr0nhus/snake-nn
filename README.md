@@ -2,62 +2,76 @@
 
 Training a neural network to play Snake using a genetic algorithm (neuroevolution).
 
-Instead of learning through backpropagation, a population of networks plays the game and the best-performing ones are selected, combined, and mutated over successive generations.
+A population of randomly-initialized networks each play the game, the best performers are selected, combined, and mutated, and the process repeats over many generations until an agent learns to survive and chase food.
 
 ## Project layout
 
-| File | Purpose | Status |
-| --- | --- | --- |
-| [game.py](game.py) | `SnakeGame` — game logic, state encoding, and reward signal | ✅ implemented |
-| [network.py](network.py) | Neural network that maps game state → action | 🚧 stub |
-| [ga.py](ga.py) | Genetic algorithm: population, selection, crossover, mutation | 🚧 stub |
-| [main.py](main.py) | Entry point — runs the training loop | 🚧 stub |
-| [visualize.py](visualize.py) | Render a trained agent playing | 🚧 stub |
+| File | Purpose |
+| --- | --- |
+| [game.py](game.py) | `SnakeGame` — game logic, state encoding, and reward signal |
+| [network.py](network.py) | `NeuralNetwork` — feedforward net mapping game state → action |
+| [ga.py](ga.py) | Genetic algorithm: evaluation, selection, crossover, mutation, save/load |
+| [main.py](main.py) | CLI entry point — `train` and `play` commands |
+| [visualize.py](visualize.py) | Renders a trained agent with pygame |
+| `best_net.npz` | Weights of the best network found so far (written during training) |
 
-## The game
-
-`SnakeGame` runs on a configurable square grid (default 20×20).
-
-**Actions** are relative to the snake's current heading: `"left"`, `"right"`, or `"straight"` (any other value keeps the direction).
-
-**State** (`get_state`) is an 11-element binary vector:
-
-- Danger straight / left / right (collision one step ahead in each direction)
-- Current direction (one-hot over the 4 directions)
-- Food location relative to the head (left, right, up, down)
-
-**Rewards** (`step`):
-
-- `+10` for eating food
-- `-10` for hitting a wall or itself
-- `-10` if the episode runs too long without progress
-- `0` otherwise
-
-## Getting started
+## Setup
 
 ```bash
-# Create and activate a virtual environment
 python3 -m venv venv
 source venv/bin/activate
-
-# Install dependencies
-pip install numpy
+pip install numpy pygame
 ```
 
-### Quick sanity check
+`numpy` is required for everything; `pygame` is only needed for the `play` command.
 
-```python
-from game import SnakeGame
+## Usage
 
-env = SnakeGame(grid_size=20)
-state = env.get_state()
-reward, done = env.step("straight")
-print(state, reward, done)
+The project is driven through [main.py](main.py), which has two subcommands.
+
+### Train
+
+Runs the genetic algorithm. Fitness is evaluated in parallel across CPU cores. Whenever a new best network is found it is saved to `--out` (default `best_net.npz`).
+
+```bash
+python main.py train
 ```
 
-## Roadmap
+Options (defaults shown):
 
-- [ ] Implement the feedforward network in `network.py`
-- [ ] Implement the genetic algorithm in `ga.py`
-- [ ] Wire up the training loop in `main.py`
-- [ ] Add visualization of a trained agent in `visualize.py`
+| Flag | Default | Meaning |
+| --- | --- | --- |
+| `--generations` | `500` | Number of generations to evolve |
+| `--pop` | `300` | Population size |
+| `--elite` | `10` | Top networks copied unchanged into the next generation |
+| `--k` | `5` | Tournament size for parent selection |
+| `--mutation-rate` | `0.05` | Fraction of weights perturbed per child |
+| `--mutation-strength` | `0.3` | Std-dev of the mutation noise |
+| `--out` | `best_net.npz` | Where to save the best network |
+
+Example — a shorter run with a larger population:
+
+```bash
+python main.py train --generations 200 --pop 500 --out my_net.npz
+```
+
+Each generation prints its best and average fitness, and announces a new record when one is saved.
+
+### Play
+
+Watch a saved network play in a pygame window.
+
+```bash
+python main.py play
+```
+
+| Flag | Default | Meaning |
+| --- | --- | --- |
+| `--net` | `best_net.npz` | Network file to load |
+| `--fps` | `60` | Playback speed |
+
+Press **R** in the window to start a new game. Example:
+
+```bash
+python main.py play --net my_net.npz --fps 15
+```

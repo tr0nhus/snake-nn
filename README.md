@@ -25,6 +25,14 @@ pip install numpy pygame
 
 `numpy` is required for everything; `pygame` is only needed for the `play` command.
 
+> **Note:** on newer Python versions (e.g. 3.14), `pygame` may not yet publish a
+> prebuilt wheel, causing `pip install` to fail trying to build it from source.
+> If that happens, install [`pygame-ce`](https://pyga.me/) instead — it's an
+> actively maintained, drop-in-compatible fork that still imports as `pygame`:
+> ```bash
+> pip install numpy pygame-ce
+> ```
+
 ## Usage
 
 The project is driven through [main.py](main.py), which has two subcommands.
